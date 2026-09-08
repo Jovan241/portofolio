@@ -98,7 +98,34 @@
         <p>lorem ipsum</p>
       </div>
       <div class="col-6 text-center" style="padding-bottom: 15px;">
-        <img src="img/about2.png" class="img-fluid" alt="photo" style="width: 60%;">
+        <div>
+          <canvas id="myChart"></canvas>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+        <script>
+          const ctx = document.getElementById('myChart');
+        
+          new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ['5star', '4star', '3star', '2star', '1star',],
+              datasets: [{
+                label: '# of Votes',
+                data: [21, 5, 3, 1, 1],
+                borderWidth: 1
+              }]
+            },
+            options: {
+              scales: {
+                y: {
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        </script>
       </div>
     </div>
     <div class="row text-white" style="background-image: url(img/bg-2.png); " id="D">
