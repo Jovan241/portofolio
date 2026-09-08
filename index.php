@@ -52,36 +52,43 @@
     <div class="row bg-image text-white " style="background-image: url(img/bg-1.png); background-attachment: fixed;" id="B">
     <div class="col-12 text-center" style="padding-top: 10px;">
       <h2>What can i do?</h2>
+      <?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "portofolio_20242031";
+
+// Create connection
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+// Check connection
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
+}
+
+$sql = "SELECT id, judul, foto, isian FROM about";
+// Execute the SQL query
+$result = mysqli_query($conn, $sql);
+
+// Process the result set
+if (mysqli_num_rows($result) > 0) {
+  
+  while($row = mysqli_fetch_assoc($result)) {
+  echo '<div class="card my-3" style="width: 18rem;">';
+  echo '<img src="' .$row["foto"] . '" class="card-img-top" alt="...">';
+  echo '<div class="card-body">';
+  echo '  <h5 class="card-title">'. $row["judul"]. '</h5>';
+  echo '  <p class="card-text">'. $row["isian"]. '</p>';
+  echo '</div>';
+  echo '</div>';
+  }
+} else {
+  echo "0 results";
+}
+
+mysqli_close($conn);
+?>
     </div>
-    <div class="col-12 text-center" style="padding-bottom: 10px;">
-      <img src="img/info.png" class="img-fluid" alt="photo" style="width: 30%;">
-    </div>
-    <div class="col-4 text-center">
-      <h3>Hal 1</h3>
-    </div>
-    <div class="col-4 text-center">
-      <h3>Hal 2</h3>
-    </div>
-    <div class="col-4 text-center">
-      <h3>Hal 3</h3>
-    </div>
-    <div class="col-4 text-center" style="padding-bottom: 10px;">
-      <img src="img/info.png" class="img-fluid" alt="photo" style="width: 60%;">
-    </div>
-    <div class="col-4 text-center" style="padding-bottom: 10px;">
-      <img src="img/info.png" class="img-fluid" alt="photo" style="width: 60%;">
-    </div>
-    <div class="col-4 text-center" style="padding-bottom: 10px;">
-      <img src="img/info.png" class="img-fluid" alt="photo" style="width: 60%;">
-    </div>
-    <div class="col-4 text-center" style="padding-bottom: 10px;">
-      <p> lorem ipsum</p>
-    </div>
-    <div class="col-4 text-center" style="padding-bottom: 10px;">
-      <p> lorem ipsum</p>
-    </div>
-    <div class="col-4 text-center" style="padding-bottom: 10px;">
-      <p> lorem ipsum</p>
+</div>
     </div>
     </div>
     <div class="row" style="background-color: rgb(204, 201, 201);" id="C">
