@@ -58,21 +58,20 @@ $username = "root";
 $password = "";
 $dbname = "portofolio_20242031";
 
-// Create connection
+
 $conn = mysqli_connect($servername, $username, $password, $dbname);
-// Check connection
 if (!$conn) {
   die("Connection failed: " . mysqli_connect_error());
 }
 
 $sql = "SELECT id, judul, foto, isian FROM about";
-// Execute the SQL query
 $result = mysqli_query($conn, $sql);
 
 // Process the result set
 if (mysqli_num_rows($result) > 0) {
-  
+  echo '<div class="row row-cols-1 row-cols-md-3 g-4">';
   while($row = mysqli_fetch_assoc($result)) {
+  echo '<div class = "col">';  
   echo '<div class="card my-3" style="width: 18rem;">';
   echo '<img src="' .$row["foto"] . '" class="card-img-top" alt="...">';
   echo '<div class="card-body">';
@@ -80,7 +79,9 @@ if (mysqli_num_rows($result) > 0) {
   echo '  <p class="card-text">'. $row["isian"]. '</p>';
   echo '</div>';
   echo '</div>';
+  echo '</div>';
   }
+echo '</div>';
 } else {
   echo "0 results";
 }
@@ -110,43 +111,118 @@ mysqli_close($conn);
         </div>
         
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "portofolio_20242031";
+
+
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+if (!$conn) {
+  die("Connection failed: " . mysqli_connect_error());
+}
+
+$sql = "SELECT id, 5star, 4star, 3star, 2star, 1star FROM rating";
+$result = mysqli_query($conn, $sql);
+
+if (mysqli_num_rows($result) > 0) {
+  $row = mysqli_fetch_assoc($result);
+  echo '<div style="width: 600px; margin: auto;">';
+  echo '  <canvas id="myChart"></canvas>';
+  echo '</div>';
+  
+  echo '<script>';
+  echo "  const ctx = document.getElementById('myChart');";
+  echo "  const myChart = new Chart(ctx, {";
+  echo "      type: 'bar',";
+  echo "      data: {";
+  echo "          labels: ['5star', '4star', '3star', '2star', '1star'],";
+  echo "          datasets: [{";
+  echo "              label: '# of Votes',";
+  echo "              data: [". $row["5star"].",". $row["4star"].", ". $row["3star"].", ". $row["2star"].", ". $row["1star"]."],";
+  echo "              borderWidth: 1";
+  echo "          }]";
+  echo "      },";
+  echo "      options: {";
+  echo "          scales: { y: { beginAtZero: true } }";
+  echo "      }";
+  echo "  });";
+
+ 
+  echo "  function perbaruiChart() {";
+    echo "      fetch('reset.php')";
+    echo "      .then(response => response.json())";
+    echo "      .then(data => {";
+    echo "          if(data) {";
+    echo "              myChart.data.datasets[0].data = [data.star5, data.star4, data.star3, data.star2, data.star1];";
+    echo "              myChart.update();";
+    echo "          }";
+    echo "      })";
+    echo "      .catch(error => console.error('Error:', error));";
+    echo "  }";
+  
+    echo "  setInterval(perbaruiChart, 3000);";
+  
+  echo '</script>';
+
+} else {
+  echo "0 results";
+}
+
+mysqli_close($conn);
+?>
         
-        <script>
-          const ctx = document.getElementById('myChart');
-        
-          new Chart(ctx, {
-            type: 'bar',
-            data: {
-              labels: ['5star', '4star', '3star', '2star', '1star',],
-              datasets: [{
-                label: '# of Votes',
-                data: [21, 5, 3, 1, 1],
-                borderWidth: 1
-              }]
-            },
-            options: {
-              scales: {
-                y: {
-                  beginAtZero: true
-                }
-              }
-            }
-          });
-        </script>
       </div>
     </div>
     <div class="row text-white" style="background-image: url(img/bg-2.png); " id="D">
       <div class="col-12 text-center" style="padding-top: 10px; padding-bottom: 20px;">
         <h2>lets get started</h2>
+        <form id ="formKontak">
         <div class="mb-3">
           <label for="email-ad" class="form-label">Email</label>
-          <input type="email" class="form-control" id="email-ad" placeholder="name@whatever.com">
+          <input type="email" class="form-control" id="email-ad" placeholder="name@whatever.com" name="email">
         </div>
         <div class="mb-3">
           <label for="message-ad" class="form-label">Message</label>
-          <textarea class="form-control" id="message-ad" rows="3"></textarea>
-          <button class="btn btn-primary" style="margin-top: 20px;">send</button>
+          <textarea class="form-control" id="message-ad" rows="3" name="pesan"></textarea>
         </div>
+        <div class="text-center">
+    <button type="submit" class="btn btn-primary" style="margin-top: 10px; width: 100%; max-width: 150px;">send</button>
+  </div>
+</form>
+<script>
+document.getElementById('formKontak').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    fetch('proses.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const alertContainer = document.getElementById('alert-container');
+        if(data.status === 'sukses') {
+            alertContainer.innerHTML = `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    ${data.pesan}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+            document.getElementById('formKontak').reset(); // Kosongkan form
+        } else {
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${data.pesan}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+        }
+    })
+    this.reset(); 
+  
+  alert("message sent");
+});
+</script>
     </div>
     <div class="row text-center" style="background-color: rgb(119, 109, 109);">
     <h6>ini hanya portofolio latihan, data belum tentu valid</h6>
